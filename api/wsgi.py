@@ -13,8 +13,3 @@ django.setup()
 from django.core.wsgi import get_wsgi_application
 
 app = get_wsgi_application()
-
-# Vercel requires a 'handler' function for Python serverless functions
-def handler(request):
-    """Handler for Vercel Python serverless functions."""
-    return app(request)

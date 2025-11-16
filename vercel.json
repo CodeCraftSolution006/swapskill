@@ -1,23 +1,28 @@
 {
   "version": 2,
-  "buildCommand": "bash vercel-build.sh",
   "builds": [
     {
       "src": "api/wsgi.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
-        "runtime": "python3.12"
+        "runtime": "python3.12",
+        "requirements": "requirements.txt"
       }
     }
   ],
   "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/staticfiles/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "api/wsgi.py"
     }
   ],
   "env": {
-    "PYTHONUNBUFFERED": "1"
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "."
   }
 }
