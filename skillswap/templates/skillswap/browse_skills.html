@@ -18,15 +18,15 @@
 <div class="navbar-padding"></div>
 <div class="container content-container">
     <!-- Modern Filters -->
-    <div class="card border-0 shadow-lg mb-5" style="border-radius: 16px;">
-        <div class="card-body p-4">
+    <div class="card border-0 shadow-lg mb-5 browse-filter-card">
+        <div class="card-body">
             <form method="get">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-5">
                         <label class="form-label fw-semibold">
                             <i class="fas fa-search me-2"></i>Search Skills
                         </label>
-                        <input type="text" name="search" class="form-control form-control-lg"
+                        <input type="text" name="search" class="form-control"
                                placeholder="What skill are you looking for?" value="{{ search_query }}">
                     </div>
 
@@ -34,7 +34,7 @@
                         <label class="form-label fw-semibold">
                             <i class="fas fa-filter me-2"></i>Category
                         </label>
-                        <select name="category" class="form-select form-select-lg">
+                        <select name="category" class="form-select">
                             <option value="">All Categories</option>
                             <option value="programming" {% if current_category == 'programming' %}selected{% endif %}>💻 Programming</option>
                             <option value="languages" {% if current_category == 'languages' %}selected{% endif %}>🗣️ Languages</option>
@@ -51,7 +51,7 @@
 
                     <div class="col-md-3">
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-search me-2"></i>Search
                             </button>
                             {% if search_query or current_category %}
@@ -68,10 +68,9 @@
 
     <!-- Skills Grid -->
     {% if skills %}
-        <div class="row">
+        <div class="skill-grid">
             {% for skill in skills %}
-                <div class="col-md-4 mb-4">
-                    <div class="card skill-card h-100">
+                <div class="card skill-card h-100">
                         {% if skill.image %}
                             <img src="{{ skill.image.url }}" class="skill-image" alt="{{ skill.name }}">
                         {% else %}
@@ -107,7 +106,6 @@
                             <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-primary btn-sm">View Details</a>
                         </div>
                     </div>
-                </div>
             {% endfor %}
         </div>
     {% else %}
