@@ -16,8 +16,18 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-skillswap-secret-key-
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # Accept a comma-separated list of hosts (set in Vercel environment variables)
-ALLOWED_HOSTS_STR = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,*.vercel.app')
+ALLOWED_HOSTS_STR = config('ALLOWED_HOSTS', default='127.0.0.1,localhost')
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS_STR.split(',') if h.strip()]
+
+# Always allow localhost and common development domains
+ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
+
+# Allow all Vercel domains dynamically
+if os.environ.get('VERCEL_ENV') or os.environ.get('DATABASE_URL'):
+    # In production (Vercel), allow all Vercel domains
+    ALLOWED_HOSTS.extend([
+        '.vercel.app',  # Matches *.vercel.app
+    ])
 
 INSTALLED_APPS = [
     'django.contrib.admin',

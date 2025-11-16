@@ -11,10 +11,10 @@ echo "Installing requirements..."
 pip install -r requirements.txt
 
 echo "Running Django migrations..."
-python manage.py migrate --noinput 2>&1 || true
+python manage.py migrate --noinput
 
 echo "Collecting static files..."
-python manage.py collectstatic --noinput --clear 2>&1 || true
+python manage.py collectstatic --noinput --clear
 
 echo "Creating superuser if needed..."
 python manage.py shell << END
