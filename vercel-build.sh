@@ -1,10 +1,9 @@
 #!/bin/bash
-# Optimized build script for Vercel Python projects
-# Runs during the Vercel build phase
+# Build script for Vercel Python projects
 
 set -e
 
-echo "Installing requirements (quiet mode)..."
+echo "Installing requirements..."
 pip install -q -r requirements.txt
 
 echo "Collecting static files..."
