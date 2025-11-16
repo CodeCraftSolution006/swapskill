@@ -3,6 +3,9 @@
    Reworked palette, spacing, and component styles
    ============================================ */
 
+/* Ensure custom styles override Bootstrap */
+* { box-sizing: border-box; }
+
 :root {
     /* Palette — multiple energetic combos available as variables */
     /* Backgrounds & surfaces */
@@ -57,12 +60,11 @@
 }
 
 /* Global resets */
-* { box-sizing: border-box; }
 html,body { height: 100%; }
 body {
     margin: 0;
-    font-family: 'Poppins', 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial;
-    background: var(--bg);
+    font-family: 'Poppins', 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial !important;
+    background: var(--bg) !important;
     color: var(--deep-charcoal); /* darker for maximum readability */
     -webkit-font-smoothing:antialiased;
     font-size: 16px; /* clear base font size */
@@ -113,15 +115,30 @@ body {
 
 /* NAVBAR */
 .navbar {
-    background: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+    background: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)) !important;
     backdrop-filter: blur(8px);
     box-shadow: var(--shadow-sm);
-    padding: 0.75rem 0;
+    padding: 0.75rem 0 !important;
 }
-.navbar-brand { font-weight: 900; color: var(--electric-blue); letter-spacing: -0.2px; font-family: 'Poppins', sans-serif; }
-.navbar .nav-link { color: var(--deep-charcoal); font-weight:600; font-size:15px; transition: color var(--ease-fast); }
-.navbar .nav-link:hover { color: var(--electric-blue); }
-.navbar .btn-light { border-radius: 999px; padding: 0.45rem 1.25rem; }
+.navbar-brand { 
+    font-weight: 900 !important; 
+    color: var(--electric-blue) !important; 
+    letter-spacing: -0.2px; 
+    font-family: 'Poppins', sans-serif; 
+}
+.navbar .nav-link { 
+    color: var(--deep-charcoal) !important; 
+    font-weight: 600 !important; 
+    font-size: 15px !important; 
+    transition: color var(--ease-fast); 
+}
+.navbar .nav-link:hover { 
+    color: var(--electric-blue) !important; 
+}
+.navbar .btn-light { 
+    border-radius: 999px !important; 
+    padding: 0.45rem 1.25rem !important; 
+}
 
 /* User Avatar in Navbar */
 .user-avatar {
@@ -195,46 +212,47 @@ body {
 
 /* BUTTONS */
 .btn {
-    border-radius: 12px;
-    padding: 0.7rem 1.25rem;
-    font-weight: 800;
-    transition: transform var(--ease), box-shadow var(--ease), opacity var(--ease);
-    font-size: 15px;
-    font-family: 'Poppins', 'Inter', sans-serif;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
+    border-radius: 12px !important;
+    padding: 0.7rem 1.25rem !important;
+    font-weight: 800 !important;
+    transition: transform var(--ease), box-shadow var(--ease), opacity var(--ease) !important;
+    font-size: 15px !important;
+    font-family: 'Poppins', 'Inter', sans-serif !important;
+    margin-right: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    border: none !important;
 }
 .btn:last-child {
-    margin-right: 0;
+    margin-right: 0 !important;
 }
 .btn-primary {
-    background: linear-gradient(90deg, var(--electric-blue) 0%, var(--aqua-green) 100%);
-    color: var(--soft-white);
-    box-shadow: 0 14px 36px rgba(14,165,255,0.12);
-    border: none;
+    background: linear-gradient(90deg, var(--electric-blue) 0%, var(--aqua-green) 100%) !important;
+    color: var(--soft-white) !important;
+    box-shadow: 0 14px 36px rgba(14,165,255,0.12) !important;
+    border: none !important;
 }
 .btn-primary:active,
 .btn-primary:focus { 
-    box-shadow: 0 8px 20px rgba(79,70,229,0.18); 
-    outline: none; 
+    box-shadow: 0 8px 20px rgba(79,70,229,0.18) !important; 
+    outline: none !important; 
 }
 .btn-primary:hover { 
-    transform: translateY(-3px); 
-    opacity: 0.98;
+    transform: translateY(-3px) !important; 
+    opacity: 0.98 !important;
 }
 
 .btn-lg { 
-    padding: 0.9rem 1.4rem; 
-    font-size: 16px; 
+    padding: 0.9rem 1.4rem !important; 
+    font-size: 16px !important; 
 }
 .btn-secondary {
-    background: linear-gradient(135deg,#fff 0%, #f8fafc 100%);
-    color: var(--deep-charcoal); 
-    border: 1px solid rgba(7, 17, 38, 0.06);
+    background: linear-gradient(135deg,#fff 0%, #f8fafc 100%) !important;
+    color: var(--deep-charcoal) !important; 
+    border: 1px solid rgba(7, 17, 38, 0.06) !important;
 }
 .btn-ghost { 
-    background: transparent; 
-    color: var(--electric-blue); 
+    background: transparent !important; 
+    color: var(--electric-blue) !important; 
 }
 
 .btn-light {
@@ -310,21 +328,21 @@ body {
 
 /* FORMS */
 .form-control { 
-    border-radius: 10px; 
-    border: 1px solid rgba(7, 17, 38, 0.08); 
-    padding: .85rem 1rem; 
-    box-shadow:none; 
-    font-size:15px; 
-    color: var(--deep-charcoal); 
-    background: var(--surface);
-    transition: all var(--transition-fast);
+    border-radius: 10px !important; 
+    border: 1px solid rgba(7, 17, 38, 0.08) !important; 
+    padding: .85rem 1rem !important; 
+    box-shadow: none !important; 
+    font-size: 15px !important; 
+    color: var(--deep-charcoal) !important; 
+    background: var(--surface) !important;
+    transition: all var(--transition-fast) !important;
 }
 .form-control::placeholder { 
-    color: rgba(7, 17, 38, 0.45); 
+    color: rgba(7, 17, 38, 0.45) !important; 
 }
 .form-control:focus { 
-    outline: none; 
-    box-shadow: 0 10px 28px rgba(14,165,255,0.10); 
+    outline: none !important; 
+    box-shadow: 0 10px 28px rgba(14,165,255,0.10) !important; 
     border-color: rgba(14,165,255,0.35);
 }
 .form-label { 

@@ -13,16 +13,13 @@
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/staticfiles/$1"
-    },
-    {
       "src": "/(.*)",
       "dest": "api/wsgi.py"
     }
   ],
   "env": {
     "PYTHONUNBUFFERED": "1",
-    "PYTHONPATH": "."
+    "PYTHONPATH": ".",
+    "DEBUG": "False"
   }
 }
