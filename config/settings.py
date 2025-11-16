@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-skillswap-secret-key-change-in-production')
 
 # Set DEBUG via env var (use 'False' in production)
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # Accept a comma-separated list of hosts (set in Vercel environment variables)
 ALLOWED_HOSTS_STR = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,*.vercel.app')
