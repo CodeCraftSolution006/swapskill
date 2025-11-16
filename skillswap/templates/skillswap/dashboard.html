@@ -1,0 +1,743 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="navbar-padding"></div>
+
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Dashboard</h2>
+            <p class="text-muted">Welcome back, {{ user.first_name|default:user.username }}!</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'messages_list' %}" class="btn btn-info me-2">
+                <i class="fas fa-comments"></i> Messages
+                {% if unread_messages %}
+                    <span class="badge bg-danger">{{ unread_messages }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'skill_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Skill
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-primary">{{ skills|length }}</h4>
+                    <p class="text-muted mb-0">Your Skills</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-success">{{ completed_exchanges }}</h4>
+                    <p class="text-muted mb-0">Completed Exchanges</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-warning">{{ pending_exchanges }}</h4>
+                    <p class="text-muted mb-0">Pending Requests</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-info">
+                        {% if average_rating %}{{ average_rating }}/5{% else %}No rating{% endif %}
+                    </h4>
+                    <p class="text-muted mb-0">Your Rating</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        {% if is_admin %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="management-tab" data-bs-toggle="tab" data-bs-target="#management" type="button" role="tab">
+                    <i class="fas fa-cogs"></i> Management
+                </button>
+            </li>
+        {% endif %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if not is_admin %}active{% endif %}" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab">
+                My Skills
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                <i class="fas fa-clock"></i> Pending Requests
+                {% if pending_exchanges > 0 %}<span class="badge bg-warning ms-2">{{ pending_exchanges }}</span>{% endif %}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="exchanges-tab" data-bs-toggle="tab" data-bs-target="#exchanges" type="button" role="tab">
+                All Exchanges
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        {% if is_admin %}
+        <!-- Management Tab -->
+        <div class="tab-pane fade show active" id="management" role="tabpanel">
+            <h3 class="mb-4"><i class="fas fa-cogs"></i> Platform Management</h3>
+            
+            <!-- Admin Statistics Cards -->
+            <div class="row mb-5">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center border-primary">
+                        <div class="card-body">
+                            <h4 class="text-primary">{{ admin_stats.total_users }}</h4>
+                            <p class="text-muted mb-0"><i class="fas fa-users"></i> Total Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center border-success">
+                        <div class="card-body">
+                            <h4 class="text-success">{{ admin_stats.total_skills }}</h4>
+                            <p class="text-muted mb-0"><i class="fas fa-lightbulb"></i> Total Skills</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center border-info">
+                        <div class="card-body">
+                            <h4 class="text-info">{{ admin_stats.total_exchanges }}</h4>
+                            <p class="text-muted mb-0"><i class="fas fa-exchange-alt"></i> Total Exchanges</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center border-warning">
+                        <div class="card-body">
+                            <h4 class="text-warning">{{ admin_stats.pending_exchanges }}</h4>
+                            <p class="text-muted mb-0"><i class="fas fa-clock"></i> Pending</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Stats Row -->
+            <div class="row mb-5">
+                <div class="col-md-2 mb-3">
+                    <div class="card text-center border-danger">
+                        <div class="card-body">
+                            <h5 class="text-danger">{{ admin_stats.total_messages }}</h5>
+                            <p class="text-muted mb-0 small"><i class="fas fa-envelope"></i> Messages</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <div class="card text-center border-secondary">
+                        <div class="card-body">
+                            <h5 class="text-secondary">{{ admin_stats.unread_messages }}</h5>
+                            <p class="text-muted mb-0 small"><i class="fas fa-envelope-open"></i> Unread</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <div class="card text-center border-dark">
+                        <div class="card-body">
+                            <h5 class="text-dark">{{ admin_stats.total_reviews }}</h5>
+                            <p class="text-muted mb-0 small"><i class="fas fa-star"></i> Reviews</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <div class="card text-center border-success">
+                        <div class="card-body">
+                            <h5 class="text-success">{{ admin_stats.completed_exchanges }}</h5>
+                            <p class="text-muted mb-0 small"><i class="fas fa-check"></i> Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="/admin/" class="btn btn-primary w-100" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-lock"></i> Full Admin Panel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Users Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-users"></i> Recent Users</h5>
+                </div>
+                <div class="card-body">
+                    {% if admin_stats.all_users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Skills Count</th>
+                                        <th>Joined</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in admin_stats.all_users %}
+                                    <tr>
+                                        <td><strong>{{ user.user.username }}</strong></td>
+                                        <td>{{ user.user.email }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ user.skill_set.count }}</span>
+                                        </td>
+                                        <td><small class="text-muted">{{ user.user.date_joined|date:"M d, Y" }}</small></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No users found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Pending Exchanges Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Pending Exchanges</h5>
+                </div>
+                <div class="card-body">
+                    {% if admin_stats.pending_exchanges > 0 %}
+                        <div class="row">
+                            {% for exchange in admin_stats.all_exchanges %}
+                                {% if exchange.status == 'pending' %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-warning">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ exchange.skill_requested.name }} ↔ {{ exchange.skill_offered.name }}</h6>
+                                            <p class="card-text small text-muted">
+                                                <strong>Requester:</strong> {{ exchange.requester.user.username }}<br>
+                                                <strong>Provider:</strong> {{ exchange.provider.user.username }}<br>
+                                                <strong>Status:</strong> <span class="badge bg-warning">{{ exchange.get_status_display }}</span><br>
+                                                <strong>Created:</strong> {{ exchange.created_at|date:"M d, Y" }}
+                                            </p>
+                                            <a href="/admin/skillswap/skillexchange/{{ exchange.pk }}/change/" class="btn btn-sm btn-outline-primary">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% empty %}
+                                <div class="col-12">
+                                    <p class="text-muted">No pending exchanges.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No pending exchanges at this time.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Messages Section -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-envelope"></i> Recent Messages</h5>
+                </div>
+                <div class="card-body">
+                    {% if admin_stats.all_messages %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Message Preview</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for message in admin_stats.all_messages %}
+                                    <tr>
+                                        <td><strong>{{ message.sender.user.username }}</strong></td>
+                                        <td>{{ message.receiver.user.username }}</td>
+                                        <td><small>{{ message.message_text|truncatewords:10 }}</small></td>
+                                        <td>
+                                            {% if message.is_read %}
+                                                <span class="badge bg-success">Read</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Unread</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><small class="text-muted">{{ message.created_at|date:"M d, Y H:i" }}</small></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No messages found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- My Skills Tab -->
+        <div class="tab-pane fade {% if not is_admin %}show active{% endif %}" id="skills" role="tabpanel">
+            {% if skills %}
+                <div class="row">
+                    {% for skill in skills %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                {% if skill.image %}
+                                    <img src="{{ skill.image.url }}" class="card-img-top" alt="{{ skill.name }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        <i class="fas fa-lightbulb fa-3x text-white"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ skill.name }}</h5>
+                                    <p class="card-text text-muted">{{ skill.description|truncatewords:20 }}</p>
+                                    <div class="mb-3">
+                                        <span class="badge badge-category">{{ skill.get_category_display }}</span>
+                                        <span class="badge bg-info">{{ skill.get_level_display }}</span>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-sm btn-primary flex-grow-1">View</a>
+                                        <a href="{% url 'skill_edit' skill.pk %}" class="btn btn-sm btn-warning flex-grow-1">Edit</a>
+                                        <a href="{% url 'skill_delete' skill.pk %}" class="btn btn-sm btn-danger flex-grow-1">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>You haven't added any skills yet. <a href="{% url 'skill_create' %}">Add your first skill</a></p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Pending Requests Tab -->
+        <div class="tab-pane fade" id="pending" role="tabpanel">
+            {% if exchanges %}
+                <div class="row">
+                    {% for exchange in exchanges %}
+                        {% if exchange.status == 'pending' %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 border-warning">
+                                    <div class="card-header bg-warning bg-opacity-10 border-bottom border-warning">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-handshake text-warning"></i> 
+                                                Skill Exchange Request
+                                            </h5>
+                                            <span class="badge bg-warning">Pending</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Request Details -->
+                                        <div class="mb-3">
+                                            <p class="small text-muted mb-1">Request From:</p>
+                                            <div class="d-flex align-items-center mb-3">
+                                                {% if exchange.requester.profile_picture %}
+                                                    <img src="{{ exchange.requester.profile_picture.url }}" alt="{{ exchange.requester.user.username }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <h6 class="mb-0">{{ exchange.requester.user.get_full_name|default:exchange.requester.user.username }}</h6>
+                                                    <small class="text-muted">@{{ exchange.requester.user.username }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Skills Being Exchanged -->
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <p class="small text-muted mb-1">They Want:</p>
+                                                <div class="skill-badge mb-2">
+                                                    <i class="fas fa-star text-success"></i>
+                                                    <strong>{{ exchange.skill_offered.name }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ exchange.skill_offered.get_category_display }}</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <p class="small text-muted mb-1">They Offer:</p>
+                                                <div class="skill-badge mb-2">
+                                                    <i class="fas fa-gift text-primary"></i>
+                                                    <strong>{{ exchange.skill_requested.name }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ exchange.skill_requested.get_category_display }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Exchange Message -->
+                                        {% if exchange.message %}
+                                            <div class="alert alert-light small mb-3">
+                                                <strong>Message:</strong><br>
+                                                {{ exchange.message }}
+                                            </div>
+                                        {% endif %}
+
+                                        <!-- Actions -->
+                                        <div class="d-grid gap-2">
+                                            {% if exchange.provider == profile %}
+                                                <a href="{% url 'exchange_respond' exchange.pk %}" class="btn btn-success">
+                                                    <i class="fas fa-check"></i> Accept or Respond
+                                                </a>
+                                                <a href="{% url 'exchange_chat' exchange.pk %}" class="btn btn-info">
+                                                    <i class="fas fa-comments"></i> Chat with {{ exchange.requester.user.username }}
+                                                </a>
+                                            {% else %}
+                                                <button class="btn btn-secondary" disabled>
+                                                    <i class="fas fa-clock"></i> Waiting for Response
+                                                </button>
+                                                <a href="{% url 'exchange_chat' exchange.pk %}" class="btn btn-info">
+                                                    <i class="fas fa-comments"></i> Chat with {{ exchange.provider.user.username }}
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if not exchanges %}
+                <div class="alert alert-info">
+                    <i class="fas fa-inbox"></i> No pending requests yet.
+                    <a href="{% url 'browse_skills' %}">Browse skills</a> to find someone to exchange with.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Exchanges Tab -->
+        <div class="tab-pane fade" id="exchanges" role="tabpanel">
+            {% if exchanges %}
+                <div class="row">
+                    {% for exchange in exchanges %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">Exchange Details</h6>
+                                    <span class="badge {% if exchange.status == 'pending' %}bg-warning{% elif exchange.status == 'accepted' %}bg-info{% elif exchange.status == 'completed' %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ exchange.get_status_display }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <!-- With User -->
+                                    <div class="mb-3 pb-3 border-bottom">
+                                        <p class="small text-muted mb-1">With:</p>
+                                        <div class="d-flex align-items-center">
+                                            {% if exchange.requester == profile %}
+                                                {% if exchange.provider.profile_picture %}
+                                                    <img src="{{ exchange.provider.profile_picture.url }}" alt="{{ exchange.provider.user.username }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <h6 class="mb-0">{{ exchange.provider.user.get_full_name|default:exchange.provider.user.username }}</h6>
+                                                    <small class="text-muted">@{{ exchange.provider.user.username }}</small>
+                                                </div>
+                                            {% else %}
+                                                {% if exchange.requester.profile_picture %}
+                                                    <img src="{{ exchange.requester.profile_picture.url }}" alt="{{ exchange.requester.user.username }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <h6 class="mb-0">{{ exchange.requester.user.get_full_name|default:exchange.requester.user.username }}</h6>
+                                                    <small class="text-muted">@{{ exchange.requester.user.username }}</small>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Skills -->
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <p class="small text-muted mb-1">You're Offering:</p>
+                                            <strong>{{ exchange.skill_offered.name }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ exchange.skill_offered.get_category_display }}</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <p class="small text-muted mb-1">You're Requesting:</p>
+                                            <strong>{{ exchange.skill_requested.name }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ exchange.skill_requested.get_category_display }}</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="d-grid gap-2">
+                                        {% if exchange.status == 'pending' and exchange.provider == profile %}
+                                            <a href="{% url 'exchange_respond' exchange.pk %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-reply"></i> Respond to Request
+                                            </a>
+                                        {% elif exchange.status == 'accepted' %}
+                                            <a href="{% url 'exchange_complete' exchange.pk %}" class="btn btn-sm btn-success">
+                                                <i class="fas fa-check-circle"></i> Mark as Complete
+                                            </a>
+                                        {% elif exchange.status == 'completed' %}
+                                            <a href="{% url 'create_review' exchange.pk %}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-star"></i> Leave a Review
+                                            </a>
+                                        {% else %}
+                                            <button class="btn btn-sm btn-secondary" disabled>{{ exchange.get_status_display }}</button>
+                                        {% endif %}
+                                        
+                                        <a href="{% url 'exchange_chat' exchange.pk %}" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-comments"></i> Chat
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>No exchanges yet. <a href="{% url 'browse_skills' %}">Browse skills</a> to find someone to exchange with.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Tab Styling */
+    .nav-tabs {
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: #667eea;
+        border-bottom-color: #667eea;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #667eea;
+        background-color: transparent;
+        border-bottom-color: #667eea;
+    }
+
+    /* Pending Request Card */
+    .card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .card.border-warning {
+        border: 2px solid #ffc107 !important;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    /* Skill Badge */
+    .skill-badge {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s;
+    }
+
+    .skill-badge:hover {
+        background-color: #e9ecef;
+        transform: translateX(3px);
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .btn-primary:hover {
+        background-color: #5568d3;
+        border-color: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+    }
+
+    .btn-info:hover {
+        background-color: #138496;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+    }
+
+    /* Status Badges */
+    .badge {
+        padding: 6px 12px;
+        font-weight: 500;
+        border-radius: 20px;
+    }
+
+    .badge-category {
+        background-color: #e7f3ff;
+        color: #667eea;
+    }
+
+    /* Alert Styling */
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+
+    .alert-info {
+        background-color: #e7f3ff;
+        color: #667eea;
+        border-left: 4px solid #667eea;
+    }
+
+    .alert-info a {
+        color: #667eea;
+        text-decoration: underline;
+        font-weight: 500;
+    }
+
+    /* Exchange Info */
+    .exchange-status {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .exchange-status.status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .exchange-status.status-accepted {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+
+    .exchange-status.status-completed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .exchange-status.status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Profile Picture */
+    img.rounded-circle {
+        border: 2px solid #dee2e6;
+        transition: all 0.3s;
+    }
+
+    img.rounded-circle:hover {
+        border-color: #667eea;
+    }
+
+    /* Tab Pane */
+    .tab-pane {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card {
+            margin-bottom: 15px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .skill-badge {
+            margin-bottom: 10px;
+        }
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}

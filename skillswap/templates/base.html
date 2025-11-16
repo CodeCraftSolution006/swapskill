@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SkillSwap - Share Your Skills{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Primary UI font: Poppins, fallback to Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap & Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Modern CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/modern-style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="z-index: 1030;">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'index' %}">
+                <i class="fas fa-exchange-alt me-2"></i>
+                <span class="fw-bold">SkillSwap</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="{% url 'browse_skills' %}">
+                            <i class="fas fa-search me-1"></i>
+                            <span class="d-none d-sm-inline">Browse Skills</span>
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{% url 'dashboard' %}">
+                                <i class="fas fa-th-large me-1"></i>
+                                <span class="d-none d-sm-inline">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{% url 'skill_create' %}">
+                                <i class="fas fa-plus-circle me-1"></i>
+                                <span class="d-none d-sm-inline">Add Skill</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 position-relative" href="{% url 'messages_list' %}">
+                                <i class="fas fa-envelope me-1"></i>
+                                <span class="d-none d-sm-inline">Messages</span>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center px-3" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-avatar me-2">
+                                    {{ user.username|first|upper }}
+                                </div>
+                                <span class="d-none d-lg-inline">{{ user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="z-index: 1050; margin-top: 0.5rem; border-radius: 12px; min-width: 200px;">
+                                <li><a class="dropdown-item py-2" href="{% url 'profile' user.username %}"><i class="fas fa-user me-2"></i> My Profile</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'profile_edit' %}"><i class="fas fa-edit me-2"></i> Edit Profile</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'dashboard' %}"><i class="fas fa-th-large me-2"></i> Dashboard</a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'messages_list' %}"><i class="fas fa-envelope me-2"></i> Messages</a></li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li><a class="dropdown-item text-danger py-2" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i>
+                                <span class="d-none d-sm-inline">Login</span>
+                            </a>
+                        </li>
+                        <li class="nav-item ms-2">
+                            <a class="btn btn-light btn-sm px-3" href="{% url 'register' %}" style="border-radius: 20px;">
+                                <i class="fas fa-user-plus me-1"></i>
+                                <span class="d-none d-sm-inline">Register</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container navbar-padding">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Modern Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5><i class="fas fa-exchange-alt me-2"></i>SkillSwap</h5>
+                    <p class="text-white-50">Share your skills, learn from others, grow together in our vibrant community.</p>
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-light me-2 mb-2" style="border-radius: 20px;">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-light me-2 mb-2" style="border-radius: 20px;">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-light me-2 mb-2" style="border-radius: 20px;">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-light mb-2" style="border-radius: 20px;">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'index' %}"><i class="fas fa-home me-2"></i>Home</a></li>
+                        <li class="mb-2"><a href="{% url 'browse_skills' %}"><i class="fas fa-search me-2"></i>Browse Skills</a></li>
+                        {% if user.is_authenticated %}
+                            <li class="mb-2"><a href="{% url 'dashboard' %}"><i class="fas fa-th-large me-2"></i>Dashboard</a></li>
+                            <li class="mb-2"><a href="{% url 'skill_create' %}"><i class="fas fa-plus-circle me-2"></i>Add Skill</a></li>
+                        {% else %}
+                            <li class="mb-2"><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
+                            <li class="mb-2"><a href="{% url 'register' %}"><i class="fas fa-user-plus me-2"></i>Register</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>About</h5>
+                    <p class="text-white-50">SkillSwap is a platform where people can exchange skills and knowledge, creating a collaborative learning environment.</p>
+                    <div class="mt-3">
+                        <p class="mb-1"><i class="fas fa-envelope me-2"></i> contact@skillswap.com</p>
+                        <p class="mb-0"><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="opacity: 0.1;">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-white-50 mb-0">&copy; 2025 SkillSwap. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="text-white-50 mb-0">Made with <i class="fas fa-heart text-danger"></i> for the community</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

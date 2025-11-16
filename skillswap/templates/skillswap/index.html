@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="navbar-padding"></div>
+
+<!-- Modern Hero Section -->
+<div class="hero">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-12 text-center">
+                <h1 class="mb-4">
+                    <span class="d-block">Welcome to</span>
+                    <span class="gradient-text">SkillSwap</span>
+                </h1>
+                <p class="lead mb-5">Share your expertise and learn new skills from talented people in your community. Join thousands of learners and teachers today!</p>
+                {% if not user.is_authenticated %}
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{% url 'register' %}" class="btn btn-light btn-lg px-5 shadow-lg">
+                            <i class="fas fa-rocket me-2"></i>Get Started Free
+                        </a>
+                        <a href="{% url 'browse_skills' %}" class="btn btn-outline-light btn-lg px-5">
+                            <i class="fas fa-search me-2"></i>Explore Skills
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg px-5 shadow-lg">
+                            <i class="fas fa-th-large me-2"></i>My Dashboard
+                        </a>
+                        <a href="{% url 'skill_create' %}" class="btn btn-outline-light btn-lg px-5">
+                            <i class="fas fa-plus-circle me-2"></i>Share a Skill
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modern Stats Section -->
+<div class="container my-5 py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stats-card animate-slide-in-left">
+                <div class="mb-3">
+                    <i class="fas fa-users fa-3x" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                </div>
+                <h3>{{ total_users }}+</h3>
+                <p class="text-muted mb-0">Active Members</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card animate-slide-in-left" style="animation-delay: 0.1s;">
+                <div class="mb-3">
+                    <i class="fas fa-lightbulb fa-3x" style="background: var(--success-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                </div>
+                <h3>{{ total_skills }}+</h3>
+                <p class="text-muted mb-0">Skills Shared</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card animate-slide-in-left" style="animation-delay: 0.2s;">
+                <div class="mb-3">
+                    <i class="fas fa-clock fa-3x" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                </div>
+                <h3>24/7</h3>
+                <p class="text-muted mb-0">Always Available</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Skills Section -->
+<div class="container my-5 py-5">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold mb-3">
+            <span class="gradient-text">Featured Skills</span>
+        </h2>
+        <p class="lead text-muted">Discover amazing skills shared by our talented community members</p>
+    </div>
+
+    <div class="row g-4">
+        {% for skill in skills %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card skill-card h-100 shadow-hover">
+                    <div style="overflow: hidden; border-radius: 16px 16px 0 0;">
+                        {% if skill.image %}
+                            <img src="{{ skill.image.url }}" class="skill-image w-100" alt="{{ skill.name }}">
+                        {% else %}
+                            <div class="skill-image d-flex align-items-center justify-content-center">
+                                <i class="fas fa-lightbulb fa-4x text-white"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold mb-3">{{ skill.name }}</h5>
+                        <p class="card-text text-muted mb-3">{{ skill.description|truncatewords:15 }}</p>
+                        <div class="mb-3">
+                            <span class="badge badge-category me-2">{{ skill.get_category_display }}</span>
+                            <span class="badge bg-info">{{ skill.get_level_display }}</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-gradient d-flex align-items-center justify-content-center me-2"
+                                 style="width: 36px; height: 36px; background: var(--primary-gradient); color: white; font-weight: 700;">
+                                {{ skill.owner.user.username|first|upper }}
+                            </div>
+                            <div>
+                                <p class="mb-0 small">
+                                    <a href="{% url 'profile' skill.owner.user.username %}" class="text-decoration-none fw-semibold">
+                                        {{ skill.owner.user.username }}
+                                    </a>
+                                </p>
+                                {% if skill.owner.rating > 0 %}
+                                    <div class="rating" style="font-size: 14px;">
+                                        {% for i in "x"|rjust:"5" %}
+                                            {% if forloop.counter <= skill.owner.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="text-muted small">({{ skill.owner.rating }}/5)</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-primary w-100 mt-auto">
+                            <i class="fas fa-arrow-right me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                    <p class="text-muted">No skills available yet. Be the first to share!</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if skills %}
+    <div class="text-center mt-5">
+        <a href="{% url 'browse_skills' %}" class="btn btn-primary btn-lg px-5 shadow-lg">
+            <i class="fas fa-th me-2"></i>Browse All Skills
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Why SkillSwap Section -->
+<div class="py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">
+                <span class="gradient-text">Why Choose SkillSwap?</span>
+            </h2>
+            <p class="lead text-muted">Join a thriving community of learners and teachers</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-hover text-center p-4">
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                             style="width: 80px; height: 80px; background: var(--primary-gradient);">
+                            <i class="fas fa-handshake fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Peer-to-Peer Learning</h5>
+                    <p class="text-muted">Learn directly from experienced practitioners in your community. Real skills from real people.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-hover text-center p-4">
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                             style="width: 80px; height: 80px; background: var(--success-gradient);">
+                            <i class="fas fa-gift fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">100% Free Exchange</h5>
+                    <p class="text-muted">Exchange skills without spending money. Everyone gives and learns in a fair, balanced ecosystem.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-hover text-center p-4">
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                             style="width: 80px; height: 80px; background: var(--accent-gradient);">
+                            <i class="fas fa-globe fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Global Community</h5>
+                    <p class="text-muted">Connect with talented people from around the world and expand your professional network.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5 g-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-hover p-4">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 50px; height: 50px; background: var(--primary-gradient);">
+                                <i class="fas fa-shield-alt text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="fw-bold">Safe & Secure</h6>
+                            <p class="text-muted mb-0">Verified profiles and secure messaging keep your exchanges safe.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card border-0 shadow-hover p-4">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width: 50px; height: 50px; background: var(--success-gradient);">
+                                <i class="fas fa-star text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="fw-bold">Rating System</h6>
+                            <p class="text-muted mb-0">Build your reputation through honest reviews and quality exchanges.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

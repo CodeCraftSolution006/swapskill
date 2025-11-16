@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ skill.name }} - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="navbar-padding"></div>
+<div class="container content-container">
+    <div class="row">
+        <div class="col-md-8">
+            {% if skill.image %}
+                <img src="{{ skill.image.url }}" alt="{{ skill.name }}" class="img-fluid rounded mb-4" style="max-height: 400px; object-fit: cover; width: 100%;">
+            {% else %}
+                <div class="bg-light rounded mb-4 d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="fas fa-lightbulb fa-5x text-muted"></i>
+                </div>
+            {% endif %}
+            
+            <h2>{{ skill.name }}</h2>
+            
+            <div class="mb-3">
+                <span class="badge badge-category" style="font-size: 14px; padding: 8px 15px;">{{ skill.get_category_display }}</span>
+                <span class="badge bg-info" style="font-size: 14px; padding: 8px 15px;">{{ skill.get_level_display }}</span>
+            </div>
+
+            <p class="text-muted mb-4">Created on {{ skill.created_at|date:"M d, Y" }}</p>
+
+            <h4>About this skill</h4>
+            <p>{{ skill.description }}</p>
+
+            <hr>
+
+            <div class="mb-4">
+                <h4>By: <a href="{% url 'profile' skill.owner.user.username %}">{{ skill.owner.user.username }}</a></h4>
+                <p class="text-muted">
+                    {% if skill.owner.rating %}
+                        <span class="rating">
+                            {% for i in "x"|rjust:"5" %}
+                                {% if forloop.counter <= skill.owner.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        {{ skill.owner.rating }}/5
+                    {% endif %}
+                </p>
+            </div>
+
+            {% if user.is_authenticated and user == skill.owner.user %}
+                <div class="mt-4">
+                    <a href="{% url 'skill_edit' skill.pk %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'skill_delete' skill.pk %}" class="btn btn-danger">Delete</a>
+                </div>
+            {% elif user.is_authenticated %}
+                <a href="{% url 'exchange_request' skill.pk %}" class="btn btn-primary btn-lg">Request Exchange</a>
+            {% else %}
+                <p class="alert alert-info">
+                    <a href="{% url 'login' %}">Login</a> to request an exchange for this skill.
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">About the Teacher</h5>
+                    {% if skill.owner.profile_picture %}
+                        <img src="{{ skill.owner.profile_picture.url }}" alt="{{ skill.owner.user.username }}" class="img-fluid rounded-circle mb-3" style="max-width: 100px;">
+                    {% else %}
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                            <i class="fas fa-user text-muted fa-2x"></i>
+                        </div>
+                    {% endif %}
+                    <h6>{{ skill.owner.user.get_full_name|default:skill.owner.user.username }}</h6>
+                    {% if skill.owner.bio %}
+                        <p class="small text-muted">{{ skill.owner.bio|truncatewords:30 }}</p>
+                    {% endif %}
+                    <a href="{% url 'profile' skill.owner.user.username %}" class="btn btn-outline-primary btn-sm w-100">View Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

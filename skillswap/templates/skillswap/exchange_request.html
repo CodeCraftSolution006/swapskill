@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Exchange - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="navbar-padding"></div>
+<div class="container content-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Request Skill Exchange</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>They Offer:</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>{{ skill.name }}</h6>
+                                    <p class="text-muted small">{{ skill.description|truncatewords:15 }}</p>
+                                    <span class="badge badge-category">{{ skill.get_category_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>You Offer:</h5>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <select name="my_skill" class="form-select" required>
+                                        <option value="">Select a skill to offer...</option>
+                                        {% for my_skill in requester_skills %}
+                                            <option value="{{ my_skill.pk }}">{{ my_skill.name }}</option>
+                                        {% empty %}
+                                            <option value="">You haven't added any skills yet</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                {% if requester_skills %}
+                                    <h5 class="mt-4">Message</h5>
+                                    <div class="mb-3">
+                                        {{ form.message }}
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg">Send Exchange Request</button>
+                                        <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-secondary btn-lg">Cancel</a>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-warning">
+                                        You need to add at least one skill before you can request an exchange.
+                                        <a href="{% url 'skill_create' %}" class="alert-link">Add a skill</a>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 0.25rem;
+        font-family: inherit;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+</style>
+{% endblock %}
